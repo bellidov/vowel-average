@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 
 public class VowelStatisticsService {
 
-    private Map<Set<String>, List<VowelWordCounter>> statistics = new TreeMap<>();
+    private Map<VowelKey, List<VowelWordCounter>> statistics = new TreeMap<>();
     
-    public Map<Set<String>, List<VowelWordCounter>> getVowelStatistics(String filePath) {
+    public Map<VowelKey, List<VowelWordCounter>> getVowelStatistics(String filePath) {
         
         
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
@@ -23,14 +23,13 @@ public class VowelStatisticsService {
     }
     
     private void handleText(String line) {
-        String[] words = line.trim().replaceAll(" +", " ").toLowerCase().split(" ");
+        String[] words = line.trim().replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
         
         for(String word : words) {
-            int vowelCounter = 0;
-            Set<String> vowelKey = getVowelKey(word, vowelCounter);
-            
+            VowelKey vowelKey = getVowelKey(word);
+            Integer vowelCounter = vowelKey.getTotalVowelsCount();
             if(!statistics.containsKey(vowelKey)) {
-                List<VowelWordCounter> wordList = new LinkedList<>();
+                List<VowelWordCounter> wordList = new ArrayList<>();
                 VowelWordCounter vowelWordCounter = new VowelWordCounter(vowelCounter, word.length());
                 wordList.add(vowelWordCounter);
                 statistics.put(vowelKey, wordList);
@@ -39,6 +38,9 @@ public class VowelStatisticsService {
                 if(statistics.get(vowelKey).stream().filter(o -> o.getWordLength() == word.length()).findFirst().isPresent()){
                     VowelWordCounter vowelWordCounter = statistics.get(vowelKey).stream().filter(o -> o.getWordLength() == word.length()).findFirst().get();
                     vowelWordCounter.increaseVowelCounter(vowelCounter);
+                 //   int index = statistics.get(vowelKey).indexOf(vowelWordCounter);
+                 //   statistics.get(vowelKey).add(index, vowelWordCounter);
+
                 }
                 else {
                     VowelWordCounter vowelWordCounter = new VowelWordCounter(vowelCounter, word.length());
@@ -52,34 +54,36 @@ public class VowelStatisticsService {
         
     }
     
-    private Set<String> getVowelKey(String word, int vowelCount) {
-        
-        Set<String> vowelKey = new TreeSet<>();
+    private VowelKey getVowelKey(String word) {
+        int totalVowelsCounter = 0;
+        VowelKey vowelKey = new VowelKey();
         for (int i = 0; i < word.length(); ++i) {
             switch(word.charAt(i)) {
                 case 'a':
                     vowelKey.add("a");
-                    vowelCount++;
+                    totalVowelsCounter++;
                     break;
                 case 'e':
                     vowelKey.add("e");
-                    vowelCount++;
+                    totalVowelsCounter++;
                     break;
                 case 'i':
                     vowelKey.add("i");
-                    vowelCount++;
+                    totalVowelsCounter++;
                     break;
                 case 'o':
                     vowelKey.add("o");
-                    vowelCount++;
+                    totalVowelsCounter++;
                     break;
                 case 'u':
                     vowelKey.add("u");
-                    vowelCount++;
+                    totalVowelsCounter++;
                     break;
             }
-            vowelCount++;
+
         }
+
+        vowelKey.setTotalVowelsCount(totalVowelsCounter);
         return vowelKey;
     }
     

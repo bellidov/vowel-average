@@ -33,3 +33,15 @@ Rules:
  
 Good to have:
 1.     Please provide solution as maven project if it is possible.
+
+
+## SOLUTION
+---
+Considerations:
+We are considering that vowels can only be: a, e, i, o, u
+
+Output:
+vowel-average.jar
+
+Use:
+java -jar vowel-average.jar file.txt

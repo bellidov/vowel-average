@@ -3,7 +3,6 @@ package com.bellidov.language;
 
 import java.util.Objects;
 
-// should be unike by word length
 public class VowelWordCounter {
     
     private int wordLength = 0;
